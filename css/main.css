@@ -38,6 +38,9 @@ h3 {
 p {
     font-size:1.0em;
 }
+a {
+  text-decoration: none;
+}
 
 /*
  * Remove text-shadow in selection highlight: h5bp.com/i
