@@ -1,3 +1,6 @@
+---
+---
+
 /*! HTML5 Boilerplate v4.3.0 | MIT License | http://h5bp.com/ */
 
 /*
@@ -6,9 +9,17 @@
  * Kroc Camen, and the H5BP dev community and team.
  */
 
+
 /* ==========================================================================
    Base styles: opinionated defaults
    ========================================================================== */
+$neu: #cc0000;
+@mixin border-radius($radius: 5px) {
+  -webkit-border-radius: $radius;
+     -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+          border-radius: $radius;
+}
 
 html,
 button,
@@ -35,11 +46,23 @@ h2 {
 h3 {
     font-size:1.5em;
 }
+
+.nav-link{
+  color: $neu;
+
+  &.active {
+    color:green;
+  }
+}
 p {
-    font-size:1.0em;
+  @include border-radius(10px);
+  font-size:1.0em;
 }
 a {
   text-decoration: none;
+}
+.little-blue-dot {
+  fill: rgba(0, 0, 180, 0.5)
 }
 
 /*
