@@ -64,6 +64,12 @@ a {
 .little-blue-dot {
   fill: rgba(0, 0, 180, 0.5)
 }
+.absolute {
+  position:absolute;
+  top:300px;
+  right:410px;
+  opacity:.5;
+}
 
 /*
  * Remove text-shadow in selection highlight: h5bp.com/i

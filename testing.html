@@ -6,12 +6,39 @@ layout: default
   <h3>testing!!!</h3>
 </p>
 
-<svg width="200px" height="250px">
-   <rect class="box" x="50px" y="50px" fill="red" />
-   <circle cx="100px" cy="250" r="20px" class="little-blue-dot"/>
-   <g transform="translate(10, 10) rotate(45)">
-     <circle cy="50px" r="5px" class="little-blue-dot"/>
-     <circle cy="60px" r="5px" class="little-blue-dot"/>
-     <circle cy="70px" r="5px" class="little-blue-dot"/>
-   </g>
+<img class="absolute" src="kandinsky.jpg"/>
+<svg width="500px" height="300px">
+  <g>
+    <line x1="110" y1="200" x2="346" y2="130" style="stroke:rgb(0,0,0);stroke-width:2" />
+    <line x1="235" y1="50" x2="283" y2="245" style="stroke:rgb(0,0,0);stroke-width:2" />
+  </g>
+  <g>
+    <circle cx="186px" cy="200" r="20px" stroke="black" stroke-width="3px" fill="white"/>
+    <circle cx="225px" cy="190" r="20px" stroke="black" stroke-width="3px" fill="white"/>
+    <circle cx="264px" cy="178" r="20px" stroke="black" stroke-width="3px" fill="white"/>
+    <circle cx="186px" cy="200" r="17px" stroke="red" stroke-width="3px" fill="white"/>
+    <circle cx="225px" cy="190" r="17px" stroke="orange" stroke-width="3px" fill="white"/>
+    <circle cx="264px" cy="178" r="17px" stroke="yellow" stroke-width="3px" fill="white"/>
+  </g>
+  <g>
+    <circle cx="85px" cy="110px" r="70px" stroke="blue" stroke-width="5px" fill="purple" fill-opacity="0" />
+    <circle cx="85px" cy="110px" r="60px" fill="blue" />
+    <circle cx="85px" cy="110px" r="35px" stroke="white" stroke-width="5px" fill="purple" fill-opacity="0" />
+    <circle cx="85px" cy="110px" r="18px" stroke="white" stroke-width="5px" fill="purple" fill-opacity="0" />
+    <circle cx="44px" cy="168" r="23px" stroke="black" stroke-width="1px" fill="white"/>
+  </g>
+  <g transform="translate(10, 10) rotate(45)">
+    <circle cy="50px" r="5px" class="little-blue-dot"/>
+    <circle cy="60px" r="5px" class="little-blue-dot"/>
+    <circle cy="70px" r="5px" class="little-blue-dot"/>
+  </g>
+  <g transform="scale (.9) translate(-37, 60) rotate(-17)">
+    <clipPath id="cut-off-bottom">
+      <rect x="90" y="100" width="500" height="100" />
+    </clipPath>
+    <circle cx="190" cy="200" r="40" stroke="red" stroke-width="3px" fill="white" clip-path="url(#cut-off-bottom)" />
+    <circle cx="275" cy="200" r="40" stroke="orange" stroke-width="3px" fill="white" clip-path="url(#cut-off-bottom)" />
+    <circle cx="190" cy="200" r="43" stroke="black" stroke-width="3px" fill="white" fill-opacity="0" clip-path="url(#cut-off-bottom)" />
+    <circle cx="275" cy="200" r="43" stroke="black" stroke-width="3px" fill="white" fill-opacity="0" clip-path="url(#cut-off-bottom)" />
+  </g>
 </svg>
