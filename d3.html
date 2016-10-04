@@ -3,34 +3,34 @@ layout: default
 title: d3
 ---
 
+<button id="btntest1" type="button">Click Me!</button>
+<svg></svg>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
   var data = [23, 54, 34];
 
-  var svg = d3.select("body").append("svg")
+  var svg = d3.select("svg")
     .attr("width",400)
-    .attr("height",400);
+    .attr("height",200);
 
-  var circles = svg.selectAll("circle")
-    .data(data);
+  var circles = svg.selectAll("circle").data(data);
 
   circles.enter().append("circle")
     .attr("cx", function(d, i) {
       return 60 + (120 * i);
     })
-    .attr("cy", 60)
+    .attr("cy", function(d) {
+      return 60;
+    })
     .attr("r", function(d) {
       return d;
     });
 
-  d3.select(".btntest1")
-    .on("click", function() {
-      svg.selectAll("circle")
-        .style("fill", "#ff0000");
+  d3.select("#btntest1").on("click", function(e) {
+      svg.selectAll("circle").style("fill", "#ff0000");
+      console.log(svg.selectAll("circle").size());
   });
 
 </script>
-
-<button id="btntest1" type="button">Click Me!</button>
