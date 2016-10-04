@@ -4,6 +4,7 @@ title: d3
 ---
 
 <button id="btntest1" type="button">Click Me!</button>
+<button id="btntest2" type="button">Click Me Too!</button>
 <svg></svg>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -29,8 +30,25 @@ title: d3
     });
 
   d3.select("#btntest1").on("click", function(e) {
-      svg.selectAll("circle").style("fill", "#ff0000");
-      console.log(svg.selectAll("circle").size());
+      svg.selectAll("circle").style("fill", "blue");
   });
+
+  d3.select("#btntest2").on("click", function(e) {
+    d3.select("body").append("button")
+        .attr("id", "btntest3")
+        .attr("type", "button")
+        .text("I'm a useless button")
+        .on("click", createHello);
+    svg.selectAll("circle")
+      .attr("cx", function(d, i) {
+        return 50 + (50 * i);
+      });
+  });
+
+  var createHello = function() {
+    d3.select("#btntest3").on("click", function(e) {
+      console.log("hello");
+    });
+  }
 
 </script>
