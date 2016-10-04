@@ -25,4 +25,12 @@ title: d3
       return d;
     });
 
+  d3.select(".btntest1")
+    .on("click", function() {
+      svg.selectAll("circle")
+        .style("fill", "#ff0000");
+  });
+
 </script>
+
+<button id="btntest1" type="button">Click Me!</button>
