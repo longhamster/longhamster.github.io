@@ -1,0 +1,62 @@
+---
+layout: default
+title: d3
+---
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+  var svg = d3.select("body").append("svg")
+    .attr("width",700)
+    .attr("height",400);
+
+  var randomData = function () {
+    var randomArray = [];
+    var num = Math.ceil(Math.random() * 5);
+    console.log("num", num);
+    for (var i = 0; i < num; i++) {
+      randomArray.push(Math.random() * 50);
+    }
+    return randomArray;
+  }
+
+  var draw = function(data) {
+
+    var data = randomData();
+
+    var circles = svg.selectAll("circle")
+      .data(data);
+
+    var enterCircles = circles.enter().append("circle")
+      .attr("fill", "black")
+      .attr("cx", function(d, i) {
+        return 60 + (120 * i);
+      })
+      .attr("cy", function(d) {
+        return 60;
+      })
+      .attr("r", function(d) {
+        return d;
+      })
+      .on("click", function() {
+        console.log("clicked!");
+      })
+
+    circles.merge(enterCircles)
+      .transition().duration(500)
+        .attr("fill", "blue")
+      .transition().duration(5000)
+        .attr("r", function(d) {
+          return d;
+        })
+
+    var exitCircles = circles.exit()
+      .transition().duration(500)
+        .attr("r",0)
+        .remove();
+
+  }
+
+  draw(randomData)
+
+</script>
