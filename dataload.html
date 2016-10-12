@@ -1,0 +1,57 @@
+---
+layout: default
+title: LOADING DATA
+---
+
+<svg width=600 height=600></svg>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+  var draw = function(data) {
+
+    var svg = d3.select("svg");
+
+    var circles = svg.selectAll("circle").data(data);
+
+    var dataExtent = d3.extent(data, function(d, i) {
+      return d.values.length;
+    });
+
+    var radius = d3.scaleLinear()
+      .domain(dataExtent)
+      .range([25, 50]);
+
+    circles.enter().append("circle")
+      .attr("cy", 150)
+      .attr("cx", function(d, i){
+        return 150 + (170 * i);
+      })
+      .attr("r", function(d, i){
+        return d.values.length
+      });
+
+  };
+
+  d3.csv("CHICKENLOU.csv", function(error, data) {
+    // draw(file);
+    //data = data.filter(function(d, i) {
+    //  return i != 0;
+    //});
+
+    var nestedData = d3.nest()
+      .key(function(d, i) {
+        return d.ViolLevel;
+      })
+      .entries(data);
+
+    nestedData = nestedData.filter(function(d, i){
+      return d.key !="";
+    });
+
+    console.log(nestedData);
+    draw(nestedData);
+
+  });
+
+</script>
