@@ -43,6 +43,9 @@ title: LOADING DATA
       .key(function(d, i) {
         return d.ViolLevel;
       })
+      //.key(function(d, i) {
+      //  return d.ViolDesc;
+      //})
       .entries(data);
 
     nestedData = nestedData.filter(function(d, i){
