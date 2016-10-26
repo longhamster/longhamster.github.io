@@ -1,0 +1,115 @@
+<html>
+  <head>
+
+    <style>
+      #map {
+        width: 100%;
+        height: 100%;
+        background-color: grey;
+      }
+
+      .container {
+        width:100%;
+        height:100%;
+        position:relative;
+        padding:0 0 0 0px;
+      }
+
+      #sidebar {
+        position:absolute;
+        top:0;
+        bottom:0;
+        right:0;
+        width:300px;
+        background:#E85E40;
+      }
+
+      #timeline {
+        position:fixed;
+        bottom:0;
+        left:0;
+        right:0;
+        height:100px;
+        background:rgba(255,255,255,0.8);
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div id="map"></div>
+      <div id="timeline"></div>
+      <div id="sidebar"></div>
+    </div>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <script>
+      d3.csv("CHICKENLOU.csv", function(error, data) {
+        // draw(file);
+        //data = data.filter(function(d, i) {
+        //  return i != 0;
+        //});
+
+        data.forEach(function(d) {
+          d.Year = new Date(d.VIOLDTTM).getFullYear();
+        });
+
+        var nestedData = d3.nest()
+          .key(function(d, i) {
+            return d.Year;
+          })
+          .key(function(d, i) {
+            return d.ViolLevel;
+          })
+          .key(function(d, i) {
+           return d.ViolDesc;
+          })
+          .entries(data);
+
+        nestedData = nestedData.filter(function(d, i){
+          return d.key !="";
+        });
+
+        console.log(nestedData);
+
+      });
+    </script>
+
+    <script>
+      function initMap() {
+
+        var mapCenter = {lat: 42.339747, lng: -71.089164};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 17,
+          center: mapCenter,
+          draggable: false,
+          zoomControl: false,
+          panControl: false,
+          scaleControl: false,
+          scrollwheel: false,
+          disableDoubleClickZoom: true,
+          clickableLabels: false,
+          clickable: false
+        });
+
+        google.maps.event.addDomListener(window, "resize", function() {
+          var center = map.getCenter();
+          google.maps.event.trigger(map, "resize");
+          map.setCenter(center);
+        });
+        // var marker = new google.maps.Marker({
+        //   position: mapCenter,
+        //   map: map
+        // });
+      }
+    </script>
+
+    <script async defer src=
+    "https://maps.googleapis.com/maps/api/js?key=AIzaSyD_VF4Af60Yb3zcIfn5WDWjd7Z-tNufhH8&callback=initMap">
+     </script>
+
+  </body>
+</html>
