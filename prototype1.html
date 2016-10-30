@@ -1,0 +1,256 @@
+<html>
+  <head>
+
+    <style>
+      #map {
+        width: 100%;
+        height: 100%;
+        background-color: grey;
+      }
+
+      .container {
+        width:100%;
+        height:100%;
+        position:relative;
+        padding:0 0 0 0px;
+      }
+
+      #sidebar {
+        position:absolute;
+        top:0;
+        bottom:0;
+        right:0;
+        width:300px;
+        background:#E85E40;
+        padding: 25px;
+      }
+
+      #timeline {
+        position:fixed;
+        bottom:0;
+        left:0;
+        right:0;
+        height:40px;
+        background:rgba(255,255,255,0.8);
+        padding: 25px;
+      }
+
+      .foodPlaces, .foodPlaces svg {
+        position: absolute;
+      }
+
+      .foodPlaces svg {
+        width:50px;
+        height:50px;
+        padding-right: 100px;
+        font: 10px sans-serif;
+      }
+
+      .foodPlaces circle {
+        fill: red;
+        stroke: black;
+        stroke-width: 1.5px;
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div id="map"></div>
+      <div id="timeline">
+        <input type="range" id="slider">
+        <input type="text" id="textBox"/>
+      </div>
+      <div id="sidebar">
+        <h3>TESTING</h3>
+      </div>
+    </div>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <script>
+
+// GOOGLE MAP ------------------------------------------------
+
+      function initMap() {
+
+        var mapCenter = {lat: 42.339747, lng: -71.089164};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 17,
+          center: mapCenter,
+          draggable: false,
+          zoomControl: false,
+          panControl: false,
+          scaleControl: false,
+          scrollwheel: false,
+          disableDoubleClickZoom: true,
+          clickableLabels: false,
+          clickable: false
+        });
+
+        google.maps.event.addDomListener(window, "resize", function() {
+          var center = map.getCenter();
+          google.maps.event.trigger(map, "resize");
+          map.setCenter(center);
+        });
+        // var marker = new google.maps.Marker({
+        //   position: mapCenter,
+        //   map: map
+        // });
+      }
+
+// FILTER BY YEAR ----------------------------------------------
+      var years = [];
+
+      d3.csv("CHICKENLOU.csv", function(error, data) {
+        // draw(file);
+        //data = data.filter(function(d, i) {
+        //  return i != 0;
+        //});
+
+        data.forEach(function(d) {
+          d.Year = new Date(d.VIOLDTTM).getFullYear();
+        });
+
+        var nestedData = d3.nest()
+          .key(function(d, i) {
+            return d.Year;
+          })
+          .key(function(d, i) {
+            return d.Location;
+          })
+          .entries(data);
+
+        nestedData = nestedData.filter(function(d, i){
+          return d.key !="";
+        });
+
+        console.log(nestedData);
+
+      });
+
+// YEAR SLIDER ----------------------------------------------
+
+    d3.csv("CHICKENLOU.csv", function(error,data) {
+
+      data.forEach(function(d) {
+        d.Year = new Date(d.VIOLDTTM).getFullYear();
+        var num = parseFloat(d.Year)
+        years.push(num);
+      });
+
+      var defaultValue = d3.min(years);
+
+      d3.select("#slider")
+        .attr("min", d3.min(years))
+        .attr("max", d3.max(years))
+        .attr("value", d3.min(years))
+        .on("input", function() {
+
+          d3.select("#textBox").node().value = this.value;
+          draw(data, this.value);
+
+        });
+
+      draw(data, defaultValue);
+
+    });
+
+// DRAW CIRCLES BASED ON YEAR/LOCATION ON SLIDER ---------------
+
+    var draw = function(data, year) {
+    //
+    //   d3.csv("CHICKENLOU.csv", function(error,data) {
+    //     if (error) throw error;
+    //
+    //     var overlay = new google.maps.OverlayView();
+    //
+    //     overlay.onAdd = function() {
+    //       var layer = d3.select(this.getPanes().overlayLayer).append("div")
+    //         .attr("class", "foodPlaces");
+    //
+    //       overlay.draw = function() {
+    //         var projection = this.getProjection(),
+    //             padding = 10;
+    //
+    //         var marker = layer.selectAll("svg")
+    //             .data(d3.entries(data))
+    //             .each(transform) // update existing markers
+    //           .enter().append("svg")
+    //             .each(transform)
+    //             .attr("class", "marker");
+    //
+    //         // Add a circle.
+    //         marker.append("circle")
+    //             .attr("r", 4.5)
+    //             .attr("cx", padding)
+    //             .attr("cy", padding);
+    //
+    //         // Add a label.
+    //         marker.append("text")
+    //             .attr("x", padding + 7)
+    //             .attr("y", padding)
+    //             .attr("dy", ".31em")
+    //             .text(function(d) { return d.key; });
+    //
+    //         function transform(d) {
+    //           d = new google.maps.LatLng(d.value[1], d.value[0]);
+    //           d = projection.fromLatLngToDivPixel(d);
+    //           return d3.select(this)
+    //               .style("left", (d.x - padding) + "px")
+    //               .style("top", (d.y - padding) + "px");
+    //         }
+    //       };
+    //     };
+    //     overlay.setMap(map);
+    //   });
+
+      // var afg = data[0];
+      //
+      // var values = years.map(function(y) {
+      //   return afg[y + " [YR" + y + "]"];
+      // });
+      //
+      // var radius = d3.scaleLinear()
+      //   .domain(d3.extent(values))
+      //   .range([10, window.innerWidth / 2 - 10]);
+      //
+      // var svg = d3.select("svg");
+      // var circle = svg.selectAll("circle")
+      //   .data([afg]);
+      //
+      // var enter = circle.enter().append("circle");
+      //
+      // circle.merge(enter)
+      //   .attr("cx", window.innerWidth / 2)
+      //   .attr("cy", window.innerWidth / 2)
+      //   .transition().duration(500)
+      //   .attr("fill", function(d) {
+      //     var num = afg[year + " [YR" + year + "]"];
+      //     if (isNaN(parseFloat(num))) {
+      //       return "#cccccc";
+      //     }
+      //     return "green";
+      //   })
+      //   .attr("r", function(d) {
+      //     var num = afg[year + " [YR" + year + "]"];
+      //     if (isNaN(parseFloat(num))) {
+      //       return 30;
+      //     }
+      //     return radius(num);
+      //   });
+      //
+      // console.log(year, afg[year + " [YR" + year + "]"]);
+
+    };
+
+    </script>
+
+    <script async defer src=
+    "https://maps.googleapis.com/maps/api/js?key=AIzaSyD_VF4Af60Yb3zcIfn5WDWjd7Z-tNufhH8&callback=initMap">
+     </script>
+
+  </body>
+</html>
