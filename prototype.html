@@ -68,72 +68,72 @@
       </div>
     </div>
 
-    <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
 
-    <script>
+  <script>
 
 // GOOGLE MAP ------------------------------------------------
+    var map;
+    var nestedData;
+    // var yearData = nestedData.filter(function(d) {
+    //   return d.key === year;
+    // })[0].values;
 
-      function initMap() {
-
-        var mapCenter = {lat: 42.339747, lng: -71.089164};
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 17,
-          center: mapCenter,
-          draggable: false,
-          zoomControl: false,
-          panControl: false,
-          scaleControl: false,
-          scrollwheel: false,
-          disableDoubleClickZoom: true,
-          clickableLabels: false,
-          clickable: false
-        });
-
-        google.maps.event.addDomListener(window, "resize", function() {
-          var center = map.getCenter();
-          google.maps.event.trigger(map, "resize");
-          map.setCenter(center);
-        });
-        // var marker = new google.maps.Marker({
-        //   position: mapCenter,
-        //   map: map
-        // });
-      }
-
-// FILTER BY YEAR ----------------------------------------------
-      var years = [];
-
-      d3.csv("CHICKENLOU.csv", function(error, data) {
-        // draw(file);
-        //data = data.filter(function(d, i) {
-        //  return i != 0;
-        //});
-
-        data.forEach(function(d) {
-          d.Year = new Date(d.VIOLDTTM).getFullYear();
-        });
-
-        var nestedData = d3.nest()
-          .key(function(d, i) {
-            return d.Year;
-          })
-          .key(function(d, i) {
-            return d.Location;
-          })
-          .entries(data);
-
-        nestedData = nestedData.filter(function(d, i){
-          return d.key !="";
-        });
-
-        console.log(nestedData);
-
+    function initMap() {
+      var mapCenter = {lat: 42.339747, lng: -71.089164};
+      var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 17,
+        center: mapCenter,
+        draggable: false,
+        zoomControl: false,
+        panControl: false,
+        scaleControl: false,
+        scrollwheel: false,
+        disableDoubleClickZoom: true,
+        clickableLabels: false,
+        clickable: false
       });
 
-// YEAR SLIDER ----------------------------------------------
+      google.maps.event.addDomListener(window, "resize", function() {
+        var center = map.getCenter();
+        google.maps.event.trigger(map, "resize");
+        map.setCenter(center);
+      });
+      // var marker = new google.maps.Marker({
+      //   position: mapCenter,
+      //   map: map
+      // });
+    }
 
-    d3.csv("CHICKENLOU.csv", function(error,data) {
+// FILTER BY YEAR ----------------------------------------------
+    var years = [];
+
+    d3.csv("CHICKENLOU.csv", function(error, data) {
+      // draw(file);
+      //data = data.filter(function(d, i) {
+      //  return i != 0;
+      //});
+
+      data.forEach(function(d) {
+        d.Year = new Date(d.VIOLDTTM).getFullYear();
+      });
+
+      var nestedData = d3.nest()
+        .key(function(d, i) {
+          return d.Year;
+        })
+        .key(function(d, i) {
+          return d.Location;
+        })
+        .entries(data);
+
+      nestedData = nestedData.filter(function(d, i){
+        return d.key !="";
+      });
+
+      console.log(nestedData);
+
+// YEAR SLIDER ----------------------------------------------
 
       data.forEach(function(d) {
         d.Year = new Date(d.VIOLDTTM).getFullYear();
@@ -154,15 +154,10 @@
 
         });
 
-      draw(data, defaultValue);
-
-    });
-
 // DRAW CIRCLES BASED ON YEAR/LOCATION ON SLIDER ---------------
 
-    var draw = function(data, year) {
+      var draw = function(data, year) {
 
-      d3.csv("CHICKENLOU.csv", function(error,data) {
         if (error) throw error;
 
         var overlay = new google.maps.OverlayView();
@@ -205,52 +200,52 @@
           };
         };
         overlay.setMap(map);
-      });
+      };
+      draw(data, defaultValue);
+    });
 
-      // var afg = data[0];
-      //
-      // var values = years.map(function(y) {
-      //   return afg[y + " [YR" + y + "]"];
-      // });
-      //
-      // var radius = d3.scaleLinear()
-      //   .domain(d3.extent(values))
-      //   .range([10, window.innerWidth / 2 - 10]);
-      //
-      // var svg = d3.select("svg");
-      // var circle = svg.selectAll("circle")
-      //   .data([afg]);
-      //
-      // var enter = circle.enter().append("circle");
-      //
-      // circle.merge(enter)
-      //   .attr("cx", window.innerWidth / 2)
-      //   .attr("cy", window.innerWidth / 2)
-      //   .transition().duration(500)
-      //   .attr("fill", function(d) {
-      //     var num = afg[year + " [YR" + year + "]"];
-      //     if (isNaN(parseFloat(num))) {
-      //       return "#cccccc";
-      //     }
-      //     return "green";
-      //   })
-      //   .attr("r", function(d) {
-      //     var num = afg[year + " [YR" + year + "]"];
-      //     if (isNaN(parseFloat(num))) {
-      //       return 30;
-      //     }
-      //     return radius(num);
-      //   });
-      //
-      // console.log(year, afg[year + " [YR" + year + "]"]);
+    // var afg = data[0];
+    //
+    // var values = years.map(function(y) {
+    //   return afg[y + " [YR" + y + "]"];
+    // });
+    //
+    // var radius = d3.scaleLinear()
+    //   .domain(d3.extent(values))
+    //   .range([10, window.innerWidth / 2 - 10]);
+    //
+    // var svg = d3.select("svg");
+    // var circle = svg.selectAll("circle")
+    //   .data([afg]);
+    //
+    // var enter = circle.enter().append("circle");
+    //
+    // circle.merge(enter)
+    //   .attr("cx", window.innerWidth / 2)
+    //   .attr("cy", window.innerWidth / 2)
+    //   .transition().duration(500)
+    //   .attr("fill", function(d) {
+    //     var num = afg[year + " [YR" + year + "]"];
+    //     if (isNaN(parseFloat(num))) {
+    //       return "#cccccc";
+    //     }
+    //     return "green";
+    //   })
+    //   .attr("r", function(d) {
+    //     var num = afg[year + " [YR" + year + "]"];
+    //     if (isNaN(parseFloat(num))) {
+    //       return 30;
+    //     }
+    //     return radius(num);
+    //   });
+    //
+    // console.log(year, afg[year + " [YR" + year + "]"]);
 
-    };
+  </script>
 
-    </script>
-
-    <script async defer src=
-    "https://maps.googleapis.com/maps/api/js?key=AIzaSyD_VF4Af60Yb3zcIfn5WDWjd7Z-tNufhH8&callback=initMap">
-     </script>
+  <script async defer src=
+  "https://maps.googleapis.com/maps/api/js?key=AIzaSyD_VF4Af60Yb3zcIfn5WDWjd7Z-tNufhH8&callback=initMap">
+  </script>
 
   </body>
 </html>
