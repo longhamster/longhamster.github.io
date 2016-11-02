@@ -130,7 +130,7 @@
 
 // FILTER BY YEAR ----------------------------------------------
 
-    d3.csv("CHICKENLOU.csv", function(error, data) {
+    d3.csv("TESTDATA1.csv", function(error, data) {
 
       if (error) throw error;
 
@@ -147,8 +147,11 @@
         })
         .entries(data);
 
-      console.log(nestedData);
+      nestedData = nestedData.filter(function(d, i){
+        return d.key !="";
+      });
 
+      console.log(nestedData);
 
 // YEAR SLIDER ----------------------------------------------
 
@@ -212,7 +215,12 @@
                 .text(function(d) { return d.key; });
 
             function transform(d) {
-              var coords = d.key.replace("(", "").replace(")", "").replace(" ", "").split(",").map(Number);
+              var coords = d.key
+                .replace("(", "")
+                .replace(")", "")
+                .replace(" ", "")
+                .split(",")
+                .map(Number);
               console.log(coords);
               d = new google.maps.LatLng(coords[0], coords[1]);
               d = projection.fromLatLngToDivPixel(d);
