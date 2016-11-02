@@ -4,6 +4,9 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed|Source+Sans+Pro" rel="stylesheet">
 
     <style>
+      body {
+        margin:0;
+      }
       h3 {
         font-family: 'Roboto Condensed', sans-serif;
         font-size:1.5em;
@@ -73,24 +76,26 @@
         <input type="text" id="textBox"/>
       </div>
       <div id="sidebar">
-        <h3>CHICKEN</h3>
-        <p>
-          chicken chicken chicken chicken chicken chicken
-          chicken chicken chicken chicken chicken chicken
-          chicken chicken chicken chicken chicken chicken
-          chicken chicken chicken chicken chicken chicken
-          chicken chicken chicken chicken chicken chicken
-          chicken chicken chicken chicken chicken chicken
-          chicken chicken chicken chicken chicken chicken
-          chicken chicken chicken chicken chicken chicken
-          chicken chicken chicken chicken chicken chicken
-          chicken chicken chicken chicken chicken chicken
-          chicken chicken chicken chicken chicken chicken
-          chicken chicken chicken chicken chicken chicken
-          chicken chicken chicken chicken chicken chicken
-         </p>
-      </div>
-    </div>
+        <div class="siderbarInnards">
+          <h3>CHICKEN</h3>
+          <p>
+            chicken chicken chicken chicken chicken chicken
+            chicken chicken chicken chicken chicken chicken
+            chicken chicken chicken chicken chicken chicken
+            chicken chicken chicken chicken chicken chicken
+            chicken chicken chicken chicken chicken chicken
+            chicken chicken chicken chicken chicken chicken
+            chicken chicken chicken chicken chicken chicken
+            chicken chicken chicken chicken chicken chicken
+            chicken chicken chicken chicken chicken chicken
+            chicken chicken chicken chicken chicken chicken
+            chicken chicken chicken chicken chicken chicken
+            chicken chicken chicken chicken chicken chicken
+            chicken chicken chicken chicken chicken chicken
+           </p>
+         </div>
+       </div>
+     </div>
 
   <script src="https://d3js.org/d3.v4.min.js"></script>
 
@@ -98,16 +103,12 @@
 
 // GOOGLE MAP ------------------------------------------------
     var map;
-    var nestedData;
     var years = [];
     var yearData = [];
-    // var yearData = nestedData.filter(function(d) {
-    //   return d.key === year;
-    // })[0].values;
 
     function initMap() {
       var mapCenter = {lat: 42.339747, lng: -71.089164};
-      var map = new google.maps.Map(document.getElementById('map'), {
+      map = new google.maps.Map(document.getElementById('map'), {
         zoom: 17,
         center: mapCenter,
         draggable: false,
@@ -125,19 +126,13 @@
         google.maps.event.trigger(map, "resize");
         map.setCenter(center);
       });
-      // var marker = new google.maps.Marker({
-      //   position: mapCenter,
-      //   map: map
-      // });
     }
 
 // FILTER BY YEAR ----------------------------------------------
 
     d3.csv("CHICKENLOU.csv", function(error, data) {
-      // draw(file);
-      //data = data.filter(function(d, i) {
-      //  return i != 0;
-      //});
+
+      if (error) throw error;
 
       data.forEach(function(d) {
         d.Year = new Date(d.VIOLDTTM).getFullYear();
@@ -152,15 +147,8 @@
         })
         .entries(data);
 
-      nestedData = nestedData.filter(function(d, i){
-        return d.key !="";
-      });
-
-      var yearData = nestedData.filter(function(d) {
-        return d.key === d.Year;
-      })[0].values;
-
       console.log(nestedData);
+
 
 // YEAR SLIDER ----------------------------------------------
 
@@ -175,19 +163,23 @@
       d3.select("#slider")
         .attr("min", d3.min(years))
         .attr("max", d3.max(years))
-        .attr("value", d3.min(years))
+        .attr("value", defaultValue)
         .on("input", function() {
 
           d3.select("#textBox").node().value = this.value;
-          draw(data, this.value);
+          draw(this.value);
 
         });
 
 // DRAW CIRCLES BASED ON YEAR/LOCATION ON SLIDER ---------------
 
-      var draw = function(data, year) {
+      var draw = function(year) {
 
-        if (error) throw error;
+        var yearData = nestedData.filter(function(d) {
+          return d.key === year + "";
+        })[0].values;
+
+        console.log(yearData);
 
         var overlay = new google.maps.OverlayView();
 
@@ -200,7 +192,7 @@
                 padding = 10;
 
             var marker = layer.selectAll("svg")
-                .data(d3.entries(data))
+                .data(yearData)
                 .each(transform) // update existing markers
               .enter().append("svg")
                 .each(transform)
@@ -220,7 +212,9 @@
                 .text(function(d) { return d.key; });
 
             function transform(d) {
-              d = new google.maps.LatLng(d.value[1], d.value[0]);
+              var coords = d.key.replace("(", "").replace(")", "").replace(" ", "").split(",").map(Number);
+              console.log(coords);
+              d = new google.maps.LatLng(coords[0], coords[1]);
               d = projection.fromLatLngToDivPixel(d);
               return d3.select(this)
                   .style("left", (d.x - padding) + "px")
@@ -230,45 +224,8 @@
         };
         overlay.setMap(map);
       };
-      draw(data, defaultValue);
+      draw(defaultValue);
     });
-
-    // var afg = data[0];
-    //
-    // var values = years.map(function(y) {
-    //   return afg[y + " [YR" + y + "]"];
-    // });
-    //
-    // var radius = d3.scaleLinear()
-    //   .domain(d3.extent(values))
-    //   .range([10, window.innerWidth / 2 - 10]);
-    //
-    // var svg = d3.select("svg");
-    // var circle = svg.selectAll("circle")
-    //   .data([afg]);
-    //
-    // var enter = circle.enter().append("circle");
-    //
-    // circle.merge(enter)
-    //   .attr("cx", window.innerWidth / 2)
-    //   .attr("cy", window.innerWidth / 2)
-    //   .transition().duration(500)
-    //   .attr("fill", function(d) {
-    //     var num = afg[year + " [YR" + year + "]"];
-    //     if (isNaN(parseFloat(num))) {
-    //       return "#cccccc";
-    //     }
-    //     return "green";
-    //   })
-    //   .attr("r", function(d) {
-    //     var num = afg[year + " [YR" + year + "]"];
-    //     if (isNaN(parseFloat(num))) {
-    //       return 30;
-    //     }
-    //     return radius(num);
-    //   });
-    //
-    // console.log(year, afg[year + " [YR" + year + "]"]);
 
   </script>
 
