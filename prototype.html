@@ -145,6 +145,8 @@
 
       data.forEach(function(d) {
         d.Year = new Date(d.VIOLDTTM).getFullYear();
+        var num = parseFloat(d.Year)
+        years.push(num);
       });
 
       var nestedData = d3.nest()
@@ -157,6 +159,9 @@
         .entries(data);
 
       nestedData = nestedData.filter(function(d, i){
+        d.values = d.values.filter(function(l){
+          return l.key !="";
+        })
         return d.key !="";
       });
 
@@ -164,13 +169,8 @@
 
 // YEAR SLIDER ----------------------------------------------
 
-      data.forEach(function(d) {
-        d.Year = new Date(d.VIOLDTTM).getFullYear();
-        var num = parseFloat(d.Year)
-        years.push(num);
-      });
-
       var defaultValue = d3.min(years);
+      d3.select("#textBox").node().value = defaultValue;
 
       d3.select("#slider")
         .attr("min", d3.min(years))
@@ -179,71 +179,76 @@
         .on("input", function() {
 
           d3.select("#textBox").node().value = this.value;
-          draw(this.value);
+          overlay.draw(this.value);
 
         });
 
-// DRAW CIRCLES BASED ON YEAR/LOCATION ON SLIDER ---------------
 
-      var draw = function(year) {
+      var overlay = new google.maps.OverlayView();
 
-        var yearData = nestedData.filter(function(d) {
-          return d.key === year + "";
-        })[0].values;
+      overlay.onAdd = function() {
+        var layer = d3.select(this.getPanes().overlayLayer).append("div")
+          .attr("class", "foodPlaces");
 
-        console.log(yearData);
+        overlay.draw = function(year) {
 
-        var overlay = new google.maps.OverlayView();
+          console.log(year);
 
-        overlay.onAdd = function() {
-          var layer = d3.select(this.getPanes().overlayLayer).append("div")
-            .attr("class", "foodPlaces");
+          var yearData = nestedData.filter(function(d) {
+            return d.key === (year || defaultValue) + "";
+          })[0].values;
 
-          overlay.draw = function() {
-            var projection = this.getProjection(),
-                padding = 10;
+          console.log(yearData);
 
-            var marker = layer.selectAll("svg")
-                .data(yearData)
-                .each(transform) // update existing markers
-              .enter().append("svg")
-                .each(transform)
-                .attr("class", "marker");
+          var projection = this.getProjection(),
+              padding = 10;
 
-            // Add a circle.
-            marker.append("circle")
-                .attr("r", 4.5)
-                .attr("cx", padding)
-                .attr("cy", padding);
+          var marker = layer.selectAll("svg.marker")
+              .data(yearData, function(d, i){
+                return d.key;
+              });
 
-            // Add a label.
-            marker.append("text")
-                .attr("x", padding + 7)
-                .attr("y", padding)
-                .attr("dy", ".31em")
-                .text(function(d) {
-                  return d.properties.BusinessName;
-                });
+          var markerEnter = marker.enter().append("svg")
+            .attr("class", "marker");
 
-            function transform(d) {
-              var coords = d.key
-                .replace("(", "")
-                .replace(")", "")
-                .replace(" ", "")
-                .split(",")
-                .map(Number);
-              console.log(coords);
-              d = new google.maps.LatLng(coords[0], coords[1]);
-              d = projection.fromLatLngToDivPixel(d);
-              return d3.select(this)
-                  .style("left", (d.x - padding) + "px")
-                  .style("top", (d.y - padding) + "px");
-            }
-          };
+          // Add a circle.
+          markerEnter.append("circle");
+
+          // Add a label.
+          markerEnter.append("text")
+              .attr("x", padding + 7)
+              .attr("y", padding)
+              .attr("dy", ".31em")
+              .text(function(d) {
+                return d.values[0].BusinessName;
+              });
+
+          var markerUpdate = markerEnter.merge(marker);
+          markerUpdate.each(transform);
+          markerUpdate.select("circle")
+            .attr("r", 4.5)
+            .attr("cx", padding)
+            .attr("cy", padding);
+          var markerExit = marker.exit().remove();
+
+          function transform(d) {
+            var coords = d.key
+              .replace("(", "")
+              .replace(")", "")
+              .replace(" ", "")
+              .split(",")
+              .map(Number);
+            // console.log(coords);
+            d = new google.maps.LatLng(coords[0], coords[1]);
+            d = projection.fromLatLngToDivPixel(d);
+            return d3.select(this)
+                .style("left", (d.x - padding) + "px")
+                .style("top", (d.y - padding) + "px");
+          }
         };
-        overlay.setMap(map);
       };
-      draw(defaultValue);
+      overlay.setMap(map);
+
     });
 
 // DRAW PIE CHART BASED ON VIOL LEVELS -----------------
@@ -252,18 +257,18 @@
     height = 500,
     radius = Math.min(width, height) / 2;
 
-    var color = d3.scale.ordinal()
+    var color = d3.scaleOrdinal()
         .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
-    var arc = d3.svg.arc()
+    var arc = d3.arc()
         .outerRadius(radius - 10)
         .innerRadius(0);
 
-    var labelArc = d3.svg.arc()
+    var labelArc = d3.arc()
         .outerRadius(radius - 40)
         .innerRadius(radius - 40);
 
-    var pie = d3.layout.pie()
+    var pie = d3.pie()
         .sort(null)
         .value(function(d) {
           var num = d.ViolLevel;
