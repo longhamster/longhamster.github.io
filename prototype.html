@@ -79,13 +79,14 @@
 
     <div class="container">
       <div id="map"></div>
+      <div id="label" style="display: none; left: 18px; top: 52px;">Dave</div>
       <div id="timeline">
         <input type="range" id="slider">
         <input type="text" id="textBox"/>
       </div>
       <div id="sidebar">
         <div class="siderbarInnards">
-          <h3>CHICKEN</h3>
+          <h3 id="name"></h3>
           <svg></svg>
           <p>
             chicken chicken chicken chicken chicken chicken
@@ -118,16 +119,15 @@
     function initMap() {
       var mapCenter = {lat: 42.339747, lng: -71.089164};
       map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 17,
-        center: mapCenter,
-        draggable: false,
-        zoomControl: false,
-        panControl: false,
-        scaleControl: false,
-        scrollwheel: false,
-        disableDoubleClickZoom: true,
-        clickableLabels: false,
-        clickable: false
+         zoom: 17,
+         center: mapCenter,
+         draggable: false,
+         zoomControl: false,
+        // panControl: false,
+        // scaleControl: false,
+         scrollwheel: false,
+         disableDoubleClickZoom: true,
+        // clickableLabels: false
       });
 
       google.maps.event.addDomListener(window, "resize", function() {
@@ -165,7 +165,7 @@
         return d.key !="";
       });
 
-      console.log(nestedData);
+      //console.log(nestedData);
 
 // YEAR SLIDER ----------------------------------------------
 
@@ -183,22 +183,22 @@
 
         });
 
-
       var overlay = new google.maps.OverlayView();
 
       overlay.onAdd = function() {
-        var layer = d3.select(this.getPanes().overlayLayer).append("div")
-          .attr("class", "foodPlaces");
+        var layer = d3.select(this.getPanes().overlayMouseTarget).append("div")
+          .attr("class", "foodPlaces")
+          .style("z-index", "-10");
 
         overlay.draw = function(year) {
 
-          console.log(year);
+          //console.log(year);
 
           var yearData = nestedData.filter(function(d) {
             return d.key === (year || defaultValue) + "";
           })[0].values;
 
-          console.log(yearData);
+          //console.log(yearData);
 
           var projection = this.getProjection(),
               padding = 10;
@@ -206,7 +206,23 @@
           var marker = layer.selectAll("svg.marker")
               .data(yearData, function(d, i){
                 return d.key;
-              });
+              })
+              .on("click", function(d) {
+                document.getElementById('name').innerHTML = d.values[0].BusinessName;
+              })
+              // .on("mousemove", function(d) {
+              //   var position = d3.mouse(d3.select("body").node());
+              //   d3.select("#label")
+              //     .style("display", "block")
+              //     .style("left", position[0] - 50 + "px")
+              //     .style("top", position[1] - 20 + "px")
+              //     .style("z-index", "10")
+              //     .text(d.values[0].BusinessName);
+              // })
+              // .on("mouseleave", function() {
+              //   d3.select("#label").style("display", "none");
+              // })
+              ;
 
           var markerEnter = marker.enter().append("svg")
             .attr("class", "marker");
@@ -226,9 +242,22 @@
           var markerUpdate = markerEnter.merge(marker);
           markerUpdate.each(transform);
           markerUpdate.select("circle")
-            .attr("r", 4.5)
+            .attr("r", function(d) {
+              return (d.values.length / 4)
+            })
+            // .transition().duration(300)
             .attr("cx", padding)
-            .attr("cy", padding);
+            .attr("cy", padding)
+            .attr("fill", "red")
+            // .attr("fill", function (d){
+            //   var violLevels = d.values.forEach(function (d){
+            //     return d.ViolLevel
+            //   })
+            // })
+            .on("click", function(d) {
+              document.getElementById('name').innerHTML = d.values[0].BusinessName;
+            })
+
           var markerExit = marker.exit().remove();
 
           function transform(d) {
@@ -253,8 +282,8 @@
 
 // DRAW PIE CHART BASED ON VIOL LEVELS -----------------
 
-    var width = 960,
-    height = 500,
+    var width = 200,
+    height = 200,
     radius = Math.min(width, height) / 2;
 
     var color = d3.scaleOrdinal()
