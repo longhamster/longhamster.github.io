@@ -250,9 +250,15 @@
             .attr("cy", padding)
             .attr("fill", "red")
             // .attr("fill", function (d){
+            //
             //   var violLevels = d.values.forEach(function (d){
             //     return d.ViolLevel
-            //   })
+            //   }).[0].values;
+            //
+            //   violLevels.forEach(function (d){
+            //    
+            //  });
+            //
             // })
             .on("click", function(d) {
               document.getElementById('name').innerHTML = d.values[0].BusinessName;
