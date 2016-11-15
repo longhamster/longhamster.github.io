@@ -252,12 +252,13 @@
             // .attr("fill", function (d){
             //
             //   var violLevels = d.values.forEach(function (d){
-            //     return d.ViolLevel
+            //     var str = d.ViolLevel;
+            //     return str.length;
             //   }).[0].values;
             //
-            //   violLevels.forEach(function (d){
-            //    
-            //  });
+            //  var avg = violLevels.sum(data, function(d){
+            //    return d.values;
+            //  }) / data.length;
             //
             // })
             .on("click", function(d) {
