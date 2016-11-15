@@ -192,13 +192,13 @@
 
         overlay.draw = function(year) {
 
-          console.log(year);
+          //console.log(year);
 
           var yearData = nestedData.filter(function(d) {
             return d.key === (year || defaultValue) + "";
           })[0].values;
 
-          console.log(yearData);
+          //console.log(yearData);
 
           var projection = this.getProjection(),
               padding = 10;
@@ -254,9 +254,11 @@
               for (var n = 0; n < d.values.length; n++) {
                 var str = d.values[n].ViolLevel;
                 avg = avg + str.length;
+                console.log(str.length);
               }
 
               avg = avg/d.values.length;
+              console.log(avg);
 
               return color(avg);
             })
