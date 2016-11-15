@@ -165,7 +165,7 @@
         return d.key !="";
       });
 
-      //console.log(nestedData);
+      console.log(nestedData);
 
 // YEAR SLIDER ----------------------------------------------
 
@@ -192,13 +192,13 @@
 
         overlay.draw = function(year) {
 
-          //console.log(year);
+          console.log(year);
 
           var yearData = nestedData.filter(function(d) {
             return d.key === (year || defaultValue) + "";
           })[0].values;
 
-          //console.log(yearData);
+          console.log(yearData);
 
           var projection = this.getProjection(),
               padding = 10;
@@ -248,7 +248,18 @@
             // .transition().duration(300)
             .attr("cx", padding)
             .attr("cy", padding)
-            .attr("fill", "red")
+            .attr("fill", function(d, i){
+              var avg = 0;
+
+              for (var n = 0; n < d.values.length; n++) {
+                var str = d.values[n].ViolLevel;
+                avg = avg + str.length;
+              }
+
+              avg = avg/d.values.length;
+
+              return color(avg);
+            })
             // .attr("fill", function (d){
             //
             //   var violLevels = d.values.forEach(function (d){
