@@ -87,21 +87,10 @@
         <div class="siderbarInnards">
           <h3 id="name"></h3>
           <svg></svg>
-          <p>
-            chicken chicken chicken chicken chicken chicken
-            chicken chicken chicken chicken chicken chicken
-            chicken chicken chicken chicken chicken chicken
-            chicken chicken chicken chicken chicken chicken
-            chicken chicken chicken chicken chicken chicken
-            chicken chicken chicken chicken chicken chicken
-            chicken chicken chicken chicken chicken chicken
-            chicken chicken chicken chicken chicken chicken
-            chicken chicken chicken chicken chicken chicken
-            chicken chicken chicken chicken chicken chicken
-            chicken chicken chicken chicken chicken chicken
-            chicken chicken chicken chicken chicken chicken
-            chicken chicken chicken chicken chicken chicken
-           </p>
+          <ul id="testList">
+            <li>
+            </li>
+          </ul>
          </div>
        </div>
      </div>
@@ -246,7 +235,10 @@
           markerUpdate.each(transform);
           markerUpdate.select("circle")
             .attr("r", function(d) {
-              return (d.values.length / 4)
+              var scale = d3.scaleLinear()
+                .domain([ 0 , 50 ])
+                .range([ 5, 10 ]);
+              return (scale(d.values.length))
             })
             // .transition().duration(300)
             .attr("cx", padding)
@@ -266,20 +258,14 @@
 
               return color2(avg);
             })
-            // .attr("fill", function (d){
-            //
-            //   var violLevels = d.values.forEach(function (d){
-            //     var str = d.ViolLevel;
-            //     return str.length;
-            //   }).[0].values;
-            //
-            //  var avg = violLevels.sum(data, function(d){
-            //    return d.values;
-            //  }) / data.length;
-            //
-            // })
             .on("click", function(d) {
-              document.getElementById('name').innerHTML = d.values[0].BusinessName;
+              document.getElementById('name')
+                .innerHTML = d.values[0].BusinessName;
+              document.getElementById('testList')
+                .append('li')
+                  .text(function(d) {
+                    return d.values[0].ViolDesc;
+                  });
             })
 
           var markerExit = marker.exit().remove();
