@@ -259,13 +259,9 @@
               return color2(avg);
             })
             .on("click", function(d) {
-              document.getElementById('name')
-                .innerHTML = d.values[0].BusinessName;
-              document.getElementById('testList')
-                .append('li')
-                  .text(function(d) {
-                    return d.values[0].ViolDesc;
-                  });
+              d3.select('#name').html(d.values[0].BusinessName);
+              var list = d3.select('#testList').html("");
+              list.append('li').text(d.values[0].ViolDesc);
             })
 
           var markerExit = marker.exit().remove();
