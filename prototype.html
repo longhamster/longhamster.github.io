@@ -261,7 +261,9 @@
             .on("click", function(d) {
               d3.select('#name').html(d.values[0].BusinessName);
               var list = d3.select('#testList').html("");
-              list.append('li').text(d.values[0].ViolDesc);
+              for (var i = 0; i < d.values.length; i++) {
+                list.append('li').text(d.values[i].ViolDesc);
+              };
             })
 
           var markerExit = marker.exit().remove();
