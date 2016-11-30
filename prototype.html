@@ -99,7 +99,7 @@
       <div id="sidebar">
         <div class="siderbarInnards">
           <h3 id="name"></h3>
-          <svg></svg>
+          <svg id="pieChartSVG"></svg>
           <ul id="testList">
             <li>
             </li>
@@ -277,7 +277,48 @@
               for (var i = 0; i < d.values.length; i++) {
                 list.append('li').text(d.values[i].ViolDesc);
               };
-            })
+
+// DRAW PIE CHART BASED ON VIOL LEVELS -----------------
+
+              var pieNestedData = d3.nest()
+                .key(function(x) {
+                  return x.ViolLevel;
+                })
+                .entries(d.values);
+
+              pieNestedData.forEach(function(d, i){
+                var amount = d.values.length;
+                console.log(pieNestedData[i].key + " " + amount)
+              });
+
+              var arc = d3.arc()
+                .outerRadius(80-10)
+                .innerRadius(0);
+
+              var pieData = d3.pie().value(function(d){
+                return d.values.length
+              })(pieNestedData);
+
+              console.log(pieData);
+
+              var color = d3.scaleOrdinal()
+                .domain(["*", "**", "***"])
+                .range(["#FF0", "#FFA500", "#F00"]);
+
+              var pieGroup = d3.select("#pieChartSVG")
+               .append("g")
+               .attr("transform", "translate(" + 100 + "," + 150 / 2 + ")")
+               ;
+
+               var pieSlices = pieGroup.selectAll("path").data(pieData);
+
+               pieSlices.enter().append("path")
+                .attr("d", arc)
+                .style("fill", function(d, i  ) {
+                  return color(d.data.key);
+                });
+
+              })
 
           var markerExit = marker.exit().remove();
 
@@ -299,68 +340,7 @@
       };
       overlay.setMap(map);
 
-    });
-
-// DRAW PIE CHART BASED ON VIOL LEVELS -----------------
-
-    var width = 200,
-    height = 200,
-    radius = Math.min(width, height) / 2;
-
-    var color = d3.scaleOrdinal()
-        .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-
-    var arc = d3.arc()
-        .outerRadius(radius - 10)
-        .innerRadius(0);
-
-    var labelArc = d3.arc()
-        .outerRadius(radius - 40)
-        .innerRadius(radius - 40);
-
-    var pie = d3.pie()
-        .sort(null)
-        .value(function(d) {
-          var num = d.ViolLevel;
-          if ("*") {
-            return 1;
-          }
-          if ("**") {
-            return 2;
-          }
-          if ("***") {
-            return 3;
-          }
-        });
-
-    var svg = d3.select("svg")
-        .attr("width", width)
-        .attr("height", height)
-      .append("g")
-        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-    d3.csv("TESTDATA1.csv", type, function(error, data) {
-      if (error) throw error;
-
-      var g = svg.selectAll(".arc")
-          .data(pie(data))
-        .enter().append("g")
-          .attr("class", "arc");
-
-      g.append("path")
-          .attr("d", arc)
-          .style("fill", function(d) { return color(d.data.age); });
-
-      g.append("text")
-          .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
-          .attr("dy", ".35em")
-          .text(function(d) { return d.data.age; });
-    });
-
-    function type(d) {
-      d.population = +d.population;
-      return d;
-    }
+  });
 
   </script>
 
