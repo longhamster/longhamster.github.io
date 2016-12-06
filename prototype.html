@@ -99,9 +99,10 @@
       .legend {
         font-family: 'Source Sans Pro', sans-serif;
         font-size:.7em;
-        color:white;
+        fill:white;
         line-height: 1.5em;
         letter-spacing: .5px;
+        display:block;
       }
       .marker{
         font-family: 'Source Sans Pro', sans-serif;
@@ -315,6 +316,7 @@
               return color2(avg);
             })
             .on("click", function(d) {
+              d3.select('#legend').style("display", "block");
               d3.select('#name').html(d.values[0].BusinessName);
               var list = d3.select('#testList').html("");
               for (var i = 0; i < d.values.length; i++) {
