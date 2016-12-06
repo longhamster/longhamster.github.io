@@ -26,12 +26,13 @@
         color:white;
         line-height: 1.5em;
         letter-spacing: .5px;
-        list-style-type: none;
+        list-style-type: circle;
       }
       ul {
         height:250px;
         overflow:hidden;
         overflow-y:scroll;
+        list-style-type: circle;
       }
       #map {
         width: 100%;
@@ -62,6 +63,19 @@
         background:rgba(255,255,255,0.8);
         padding: 25px;
       }
+      #title {
+        font-family: 'Roboto Condensed', sans-serif;
+        font-size:1em;
+        color:#E85E40;
+        letter-spacing: 3px;
+      }
+      #yearLabel {
+        display: inline-block;
+        font-family: 'Roboto Condensed', sans-serif;
+        font-size:1em;
+        color:grey;
+        letter-spacing: 3px;
+      }
       .foodPlaces, .foodPlaces svg {
         position: absolute;
       }
@@ -79,7 +93,6 @@
         font: 10px sans-serif;
         text-anchor: middle;
       }
-
       .arc path {
         stroke: #fff;
       }
@@ -93,17 +106,18 @@
       <div id="map"></div>
       <div id="label" style="display: none; left: 18px; top: 52px;">Dave</div>
       <div id="timeline">
+        <div id="title">FOOD INSPECTION VIOLATIONS AT NEU</div>
         <input type="range" id="slider">
-        <input type="text" id="textBox"/>
+        <div id="yearLabel"></div>
       </div>
       <div id="sidebar">
         <div class="siderbarInnards">
           <h3 id="name"></h3>
           <svg id="pieChartSVG"></svg>
-          <ul id="testList">
-            <li>
-            </li>
-          </ul>
+          <div>
+            <ul id="testList">
+            </ul>
+          </div>
          </div>
        </div>
      </div>
@@ -140,7 +154,7 @@
 
 // FILTER BY YEAR ----------------------------------------------
 
-    d3.csv("TESTDATA1.csv", function(error, data) {
+    d3.csv("TESTDATA2.csv", function(error, data) {
 
       if (error) throw error;
 
@@ -171,17 +185,17 @@
 // YEAR SLIDER ----------------------------------------------
 
       var defaultValue = d3.min(years);
-      d3.select("#textBox").node().value = defaultValue;
+      //d3.select("#yearLabel").node().value = defaultValue;
+      d3.select('#yearLabel').html(defaultValue);
 
       d3.select("#slider")
         .attr("min", d3.min(years))
         .attr("max", d3.max(years))
         .attr("value", defaultValue)
         .on("input", function() {
-
-          d3.select("#textBox").node().value = this.value;
+          //d3.select("#yearLabel").node().value = this.value;
+          d3.select('#yearLabel').html(this.value);
           overlay.draw(this.value);
-
         });
 
       var overlay = new google.maps.OverlayView();
@@ -253,7 +267,7 @@
                 .range([ 5, 10 ]);
               return (scale(d.values.length))
             })
-            // .transition().duration(300)
+            //.transition().duration(300)
             .attr("cx", padding)
             .attr("cy", padding)
             .attr("fill", function(d, i){
@@ -275,7 +289,8 @@
               d3.select('#name').html(d.values[0].BusinessName);
               var list = d3.select('#testList').html("");
               for (var i = 0; i < d.values.length; i++) {
-                list.append('li').text(d.values[i].ViolDesc);
+                list.append('li').text(d.values[i].VIOLDTTM);
+                list.insert('p').text(d.values[i].ViolDesc);
               };
 
 // DRAW PIE CHART BASED ON VIOL LEVELS -----------------
@@ -303,7 +318,7 @@
 
               var color = d3.scaleOrdinal()
                 .domain(["*", "**", "***"])
-                .range(["#FF0", "#FFA500", "#F00"]);
+                .range(["#fff19b", "#ff9a34", "#d44000"]);
 
               var pieGroup = d3.select("#pieChartSVG")
                .append("g")
@@ -316,9 +331,12 @@
                 .attr("d", arc)
                 .style("fill", function(d, i  ) {
                   return color(d.data.key);
-                });
+                })
+                .transition().duration(300);
 
-              })
+            })
+
+            marker.transition().duration(300);
 
           var markerExit = marker.exit().remove();
 
