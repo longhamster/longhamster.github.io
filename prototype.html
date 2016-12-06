@@ -102,7 +102,7 @@
         fill:white;
         line-height: 1.5em;
         letter-spacing: .5px;
-        display:block;
+        display:none;
       }
       .marker{
         font-family: 'Source Sans Pro', sans-serif;
@@ -252,7 +252,8 @@
                 return d.key;
               })
               .on("click", function(d) {
-                document.getElementById('name').innerHTML = d.values[0].BusinessName;
+                //document.getElementById('name').innerHTML = d.values[0].BusinessName;
+
               })
               // .on("mousemove", function(d) {
               //   var position = d3.mouse(d3.select("body").node());
@@ -291,37 +292,14 @@
           var markerUpdate = markerEnter.merge(marker);
           markerUpdate.each(transform);
           markerUpdate.select("circle")
-            .attr("r", function(d) {
-              var scale = d3.scaleLinear()
-                .domain([ 0 , 50 ])
-                .range([ 5, 10 ]);
-              return (scale(d.values.length))
-            })
-            //.transition().duration(300)
-            .attr("cx", padding)
-            .attr("cy", padding)
-            .attr("fill", function(d, i){
-              console.log(d);
-              var avg = 0;
-
-              for (var n = 0; n < d.values.length; n++) {
-                var str = d.values[n].ViolLevel;
-                avg = avg + str.length;
-                console.log(str.length);
-              }
-
-              avg = avg/d.values.length;
-              console.log(avg);
-
-              return color2(avg);
-            })
             .on("click", function(d) {
-              d3.select('#legend').style("display", "block");
               d3.select('#name').html(d.values[0].BusinessName);
+              d3.selectAll('.legend').style("display", "block");
               var list = d3.select('#testList').html("");
               for (var i = 0; i < d.values.length; i++) {
-                list.append('li').text(d.values[i].VIOLDTTM);
-                list.insert('p').text(d.values[i].ViolDesc);
+                var li = list.append('li');
+                li.text(d.values[i].VIOLDTTM);
+                li.append('p').text(d.values[i].ViolLevel + " " + d.values[i].ViolDesc);
               };
 
 // DRAW PIE CHART BASED ON VIOL LEVELS -----------------
@@ -366,8 +344,30 @@
                 .transition().duration(300);
 
             })
+            .transition().duration(300)
+            .attr("r", function(d) {
+              var scale = d3.scaleLinear()
+                .domain([ 0 , 50 ])
+                .range([ 5, 10 ]);
+              return (scale(d.values.length))
+            })
+            .attr("cx", padding)
+            .attr("cy", padding)
+            .attr("fill", function(d, i){
+              console.log(d);
+              var avg = 0;
 
-            marker.transition().duration(300);
+              for (var n = 0; n < d.values.length; n++) {
+                var str = d.values[n].ViolLevel;
+                avg = avg + str.length;
+                console.log(str.length);
+              }
+
+              avg = avg/d.values.length;
+              console.log(avg);
+
+              return color2(avg);
+            })
 
           var markerExit = marker.exit().remove();
 
