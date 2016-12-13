@@ -80,9 +80,9 @@
         position: absolute;
       }
       .foodPlaces svg {
-        width:50px;
-        height:50px;
-        padding-right: 100px;
+        width:100px;
+        height:100px;
+        padding-right: 50px;
         font: 10px sans-serif;
       }
       .foodPlaces circle {
@@ -111,6 +111,9 @@
         line-height: 1.5em;
         letter-spacing: .5px;
       }
+      .intro {
+        display:block;
+      }
 
     </style>
 
@@ -120,7 +123,6 @@
 
     <div class="container">
       <div id="map"></div>
-      <div id="label" style="display: none; left: 18px; top: 52px;">Dave</div>
       <div id="timeline">
         <div id="title">FOOD INSPECTION VIOLATIONS AT NEU</div>
         <input type="range" id="slider">
@@ -129,6 +131,11 @@
       <div id="sidebar">
         <div class="siderbarInnards">
           <h3 id="name"></h3>
+          <h3 id="intro">Click a circle to begin.</h3>
+          <p id="intro">A look into the food inspection violations of various
+          establishments within the Northeastern University area by severity and type,
+          using Boston's Inspectional Services Department's public dataset by
+          Curt Savoie.</p>
           <svg id="pieChartSVG">
             <g class="legend" transform="translate(70,48)">
               <rect width="13" height="13" style="fill: #fff19b;"></rect>
@@ -167,12 +174,17 @@
          center: mapCenter,
          draggable: false,
          zoomControl: false,
-        // panControl: false,
-        // scaleControl: false,
          scrollwheel: false,
          disableDoubleClickZoom: true,
-        // clickableLabels: false
+         clickableLabels: false
       });
+      var noPoi = [{
+        featureType: "poi",
+        stylers: [{
+           visibility: "off"
+          }]
+      }];
+      map.setOptions({styles: noPoi});
 
       google.maps.event.addDomListener(window, "resize", function() {
         var center = map.getCenter();
@@ -214,7 +226,6 @@
 // YEAR SLIDER ----------------------------------------------
 
       var defaultValue = d3.min(years);
-      //d3.select("#yearLabel").node().value = defaultValue;
       d3.select('#yearLabel').html(defaultValue);
 
       d3.select("#slider")
@@ -222,7 +233,6 @@
         .attr("max", d3.max(years))
         .attr("value", defaultValue)
         .on("input", function() {
-          //d3.select("#yearLabel").node().value = this.value;
           d3.select('#yearLabel').html(this.value);
           overlay.draw(this.value);
         });
@@ -250,24 +260,7 @@
           var marker = layer.selectAll("svg.marker")
               .data(yearData, function(d, i){
                 return d.key;
-              })
-              .on("click", function(d) {
-                //document.getElementById('name').innerHTML = d.values[0].BusinessName;
-
-              })
-              // .on("mousemove", function(d) {
-              //   var position = d3.mouse(d3.select("body").node());
-              //   d3.select("#label")
-              //     .style("display", "block")
-              //     .style("left", position[0] - 50 + "px")
-              //     .style("top", position[1] - 20 + "px")
-              //     .style("z-index", "10")
-              //     .text(d.values[0].BusinessName);
-              // })
-              // .on("mouseleave", function() {
-              //   d3.select("#label").style("display", "none");
-              // })
-              ;
+              });
 
           var markerEnter = marker.enter().append("svg")
             .attr("class", "marker");
@@ -277,7 +270,7 @@
 
           // Add a label.
           markerEnter.append("text")
-              .attr("x", padding + 7)
+              .attr("x", padding + 10)
               .attr("y", padding)
               .attr("dy", ".31em")
               .attr("id", "marker")
@@ -295,11 +288,19 @@
             .on("click", function(d) {
               d3.select('#name').html(d.values[0].BusinessName);
               d3.selectAll('.legend').style("display", "block");
+              d3.selectAll('#intro').remove();
               var list = d3.select('#testList').html("");
               for (var i = 0; i < d.values.length; i++) {
                 var li = list.append('li');
                 li.text(d.values[i].VIOLDTTM);
-                li.append('p').text(d.values[i].ViolLevel + " " + d.values[i].ViolDesc);
+                li.append('p').text(
+                  d.values[i].ViolLevel
+                    .replace("*", "LVL 1:")
+                    .replace("**", "LVL 2:")
+                    .replace("***", "LVL 3:")
+                  + " " +
+                  d.values[i].ViolDesc
+                );
               };
 
 // DRAW PIE CHART BASED ON VIOL LEVELS -----------------
