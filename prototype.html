@@ -293,11 +293,12 @@
               for (var i = 0; i < d.values.length; i++) {
                 var li = list.append('li');
                 li.text(d.values[i].VIOLDTTM);
+                console.log(d.values[i].ViolLevel);
                 li.append('p').text(
                   d.values[i].ViolLevel
-                    .replace("*", "LVL 1:")
-                    .replace("**", "LVL 2:")
                     .replace("***", "LVL 3:")
+                    .replace("**", "LVL 2:")
+                    .replace("*", "LVL 1:")  
                   + " " +
                   d.values[i].ViolDesc
                 );
